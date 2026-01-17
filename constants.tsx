@@ -13,6 +13,7 @@ export const CATEGORIES: Category[] = [
   { id: '2', name: 'Gia dụng', slug: 'gia-dung', icon: '🏠' },
   { id: '3', name: 'Sức khỏe', slug: 'suc-khoe', icon: '🍎' },
   { id: '4', name: 'Làm đẹp', slug: 'lam-dep', icon: '💄' },
+  { id: '5', name: 'Thời trang', slug: 'thoi-trang', icon: '👕' },
 ];
 
 export const PRODUCTS = [];

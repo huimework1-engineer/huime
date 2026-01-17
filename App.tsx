@@ -61,26 +61,18 @@ const App: React.FC = () => {
         const csvText = await response.text();
         
         const rows = parseCSV(csvText);
-        // Bỏ qua dòng tiêu đề
         const dataRows = rows.slice(1); 
         
         const mappedProducts: Product[] = dataRows
           .filter(row => (row[1] && row[1].trim() !== '') || (row[3] && row[3].trim() !== '')) 
           .map((row, index) => {
-            /**
-             * Mapping theo yêu cầu mới:
-             * A (row[0]): Hạng mục
-             * B (row[1]): Link sản phẩm
-             * C (row[2]): Ảnh sản phẩm
-             * D (row[3]): Tiêu đề
-             */
             return {
               id: `sheet-${index}`,
               categoryId: row[0] ? row[0].toString().trim() : 'all',
               affiliateUrl: row[1] || '#',
               imageUrl: row[2] || '',
               name: row[3] || 'Xem sản phẩm',
-              description: '', // Không dùng mô tả theo yêu cầu mới
+              description: '',
             };
           });
 
@@ -121,7 +113,6 @@ const App: React.FC = () => {
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
       
       const categoryObj = CATEGORIES.find(c => c.slug === activeCategory);
-      // So khớp theo slug hoặc tên hạng mục trực tiếp từ sheet
       const matchesCategory = activeCategory === 'all' || 
                               product.categoryId.toLowerCase() === activeCategory.toLowerCase() ||
                               (categoryObj && product.categoryId.toLowerCase() === categoryObj.name.toLowerCase());
@@ -142,11 +133,10 @@ const App: React.FC = () => {
       <main className="flex-grow">
         {activeCategory === 'all' && !searchTerm && <Hero />}
 
-        {/* Categories Section */}
         <section className="py-12 bg-brand-light">
           <div className="container mx-auto px-4">
             <h2 className="text-xl font-bold text-brand-beige mb-8 text-center tracking-widest uppercase opacity-80">Danh mục sản phẩm</h2>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-5xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 max-w-6xl mx-auto">
               <button
                 onClick={() => handleCategoryChange('all')}
                 className={`flex flex-col items-center p-5 rounded-2xl border transition-all duration-300 ${
@@ -170,13 +160,12 @@ const App: React.FC = () => {
           </div>
         </section>
 
-        {/* Product Listing Section */}
         <section id="product-list" className="py-16 bg-brand-dark/5 border-t border-brand-cream/5 scroll-mt-24">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4 border-b border-brand-cream/5 pb-6">
               <div>
                 <h2 className="text-3xl font-bold text-brand-beige mb-2 tracking-tight">
-                  {activeCategory === 'all' ? 'Sản phẩm đề xuất' : `Danh mục: ${activeCategory}`}
+                  {activeCategory === 'all' ? 'Sản phẩm đề xuất' : `Danh mục: ${CATEGORIES.find(c => c.slug === activeCategory)?.name || activeCategory}`}
                 </h2>
                 {!isLoading && (
                   <p className="text-brand-beige/40 text-sm font-medium">

@@ -4,50 +4,84 @@ export const config = {
 };
 
 export default async function handler(req: Request) {
+  // Chỉ chấp nhận method POST
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
+    return new Response(
+      JSON.stringify({ error: 'Phương thức không được hỗ trợ' }), 
+      { status: 405, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 
   try {
-    const { name, email, message } = await req.json();
+    const body = await req.json();
+    const { name, email, message } = body;
 
-    if (!name || !email || !message) {
-      return new Response(JSON.stringify({ error: 'Missing information' }), { status: 400 });
+    // Validate dữ liệu đầu vào cơ bản
+    if (!name?.trim() || !email?.trim() || !message?.trim()) {
+      return new Response(
+        JSON.stringify({ error: 'Vui lòng điền đầy đủ thông tin' }), 
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
-    const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8020901837:AAEC8EVvacpQrZNKU-fO9u_dX4um2B8C9q0';
-    const CHAT_ID = process.env.TELEGRAM_CHAT_ID || '6436979607';
+    // Lấy biến môi trường từ Vercel
+    const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+    const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-    const text = `
-✨ <b>LIÊN HỆ MỚI TỪ HUIME</b>
---------------------------
-👤 <b>Tên:</b> ${name}
-📧 <b>Email:</b> ${email}
-📝 <b>Lời nhắn:</b>
-<i>${message}</i>
---------------------------
-📅 <i>Gửi lúc: ${new Date().toLocaleString('vi-VN')}</i>
-    `;
+    if (!BOT_TOKEN || !CHAT_ID) {
+      console.error('Missing Telegram Environment Variables');
+      return new Response(
+        JSON.stringify({ error: 'Cấu hình hệ thống chưa hoàn tất' }), 
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
-    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    // Định dạng thời gian Việt Nam
+    const now = new Date();
+    const formattedTime = new Intl.DateTimeFormat('vi-VN', {
+      dateStyle: 'full',
+      timeStyle: 'medium',
+      timeZone: 'Asia/Ho_Chi_Minh'
+    }).format(now);
+
+    // Xây dựng nội dung message cho Telegram
+    const telegramMessage = [
+      `📩 <b>LIÊN HỆ MỚI - HUIME</b>`,
+      `👤 <b>Họ tên:</b> ${name}`,
+      `📧 <b>Email:</b> ${email}`,
+      `📝 <b>Nội dung:</b>`,
+      `<i>${message}</i>`,
+      `\n⏰ <b>Thời gian:</b> ${formattedTime}`
+    ].join('\n');
+
+    // Gửi yêu cầu tới Telegram Bot API
+    const telegramResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: CHAT_ID,
-        text: text,
+        text: telegramMessage,
         parse_mode: 'HTML',
+        disable_web_page_preview: true
       }),
     });
 
-    if (!response.ok) {
-      throw new Error('Telegram API failed');
+    if (!telegramResponse.ok) {
+      const errorData = await telegramResponse.json();
+      console.error('Telegram API Error:', errorData);
+      throw new Error('Không thể gửi tin nhắn tới Telegram');
     }
 
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: 'Internal server error' }), { status: 500 });
+    return new Response(
+      JSON.stringify({ success: true, message: 'Gửi liên hệ thành công' }), 
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error: any) {
+    console.error('Contact API Error:', error);
+    return new Response(
+      JSON.stringify({ error: error.message || 'Lỗi máy chủ nội bộ' }), 
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 }

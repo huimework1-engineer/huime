@@ -10,6 +10,7 @@ export const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ
 
 export const CATEGORIES: Category[] = [
   { id: '1', name: 'Công nghệ', slug: 'cong-nghe', icon: '💻' },
+  { id: '6', name: 'Sách', slug: 'sach', icon: '📚' },
   { id: '2', name: 'Gia dụng', slug: 'gia-dung', icon: '🏠' },
   { id: '3', name: 'Sức khỏe', slug: 'suc-khoe', icon: '🍎' },
   { id: '4', name: 'Làm đẹp', slug: 'lam-dep', icon: '💄' },

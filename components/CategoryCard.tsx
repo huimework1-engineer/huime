@@ -12,14 +12,16 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, isActive, onClick
   return (
     <button
       onClick={() => onClick(category.slug)}
-      className={`flex flex-col items-center p-4 rounded-2xl border transition-all duration-300 ${
+      className={`flex flex-col items-center p-3 md:p-4 rounded-2xl border transition-all duration-300 ${
         isActive 
           ? 'bg-brand-accent border-brand-accent text-brand-cream shadow-xl scale-105' 
           : 'bg-brand-dark/20 border-brand-cream/10 text-brand-beige/70 hover:border-brand-accent/50 hover:bg-brand-dark/30 hover:shadow-md'
       }`}
     >
-      <span className="text-2xl mb-1">{category.icon}</span>
-      <span className="text-xs font-bold uppercase tracking-tight whitespace-nowrap">{category.name}</span>
+      <span className="text-xl md:text-2xl mb-1">{category.icon}</span>
+      <span className="text-[10px] md:text-xs font-bold uppercase tracking-tight whitespace-nowrap overflow-hidden text-ellipsis w-full">
+        {category.name}
+      </span>
     </button>
   );
 };

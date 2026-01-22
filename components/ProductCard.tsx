@@ -12,7 +12,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div className="bg-brand-dark/20 backdrop-blur-sm rounded-2xl border border-brand-cream/5 overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-      {/* Toàn bộ card có thể click được qua thẻ a bao ngoài các phần chính hoặc dùng a bao quanh toàn bộ */}
       <a 
         href={product.affiliateUrl} 
         target="_blank" 
@@ -21,28 +20,28 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         aria-label={`Mua ngay ${displayTitle}`}
       >
         {/* Product Image */}
-        <div className="relative aspect-square overflow-hidden bg-brand-dark/10">
+        <div className="relative aspect-[3/4] overflow-hidden bg-brand-dark/10">
           <img 
             src={product.imageUrl || fallbackImage} 
             alt={displayTitle}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
             onError={(e) => {
               (e.target as HTMLImageElement).src = fallbackImage;
             }}
           />
+          {/* Badge for Book Category if needed - logic could be added here */}
         </div>
         
         {/* Product Info */}
-        <div className="p-5 flex-1 flex flex-col">
-          <h3 className="text-lg font-bold text-brand-beige mb-6 line-clamp-2 group-hover:text-brand-accent transition-colors leading-snug min-h-[3rem]">
+        <div className="p-3 md:p-5 flex-1 flex flex-col">
+          <h3 className="text-sm md:text-lg font-bold text-brand-beige mb-3 md:mb-6 line-clamp-2 group-hover:text-brand-accent transition-colors leading-tight min-h-[2.5rem] md:min-h-[3rem]">
             {displayTitle}
           </h3>
           
-          {/* Action Button - Visually styled but the whole card is a link */}
           <div className="mt-auto pointer-events-none">
-            <div className="w-full bg-brand-accent group-hover:bg-brand-accent/90 text-brand-cream font-bold py-3.5 px-4 rounded-xl text-center transition-all shadow-lg shadow-brand-accent/20 uppercase tracking-widest text-sm">
-              Mua ngay
+            <div className="w-full bg-brand-accent group-hover:bg-brand-accent/90 text-brand-cream font-bold py-2 md:py-3.5 px-2 rounded-xl text-center transition-all shadow-lg shadow-brand-accent/20 uppercase tracking-widest text-[10px] md:text-sm">
+              Xem ngay
             </div>
           </div>
         </div>
